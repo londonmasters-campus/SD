@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>London Masters Campus - Student Verification</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <style>
+        :root { --dark-blue: #001f3f; --brand-red: #ff0000; --white: #ffffff; --star-color: #ffcc00; }
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background-color: var(--dark-blue); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 10px; }
+        .container { width: 100%; max-width: 450px; background: var(--white); border-radius: 20px; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.4); }
+        .banner { background: var(--white); padding: 25px 15px; display: flex; flex-direction: column; align-items: center; gap: 15px; border-bottom: 2px solid #f0f0f0; }
+        .banner img { height: 80px; width: auto; }
+        .banner h1 { font-size: 24px; margin: 0; text-align: center; background: linear-gradient(to right, var(--dark-blue) 20%, var(--brand-red) 50%, var(--dark-blue) 80%); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: moveRight 3s linear infinite; }
+        @keyframes moveRight { 0% { background-position: 200% center; } 100% { background-position: 0% center; } }
+        .form-content { padding: 25px 20px; background: var(--white); }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; font-size: 14px; }
+        select#course { width: 100%; padding: 10px; margin-bottom: 20px; border: 1px solid #b0bec5; border-radius: 10px; font-size: 15px; box-sizing: border-box; height: auto; min-height: 70px; white-space: pre-line; line-height: 1.4; }
+        input { width: 100%; padding: 14px; margin-bottom: 20px; border: 1px solid #b0bec5; border-radius: 10px; font-size: 16px; box-sizing: border-box; }
+        .stars { display: flex; flex-direction: row-reverse; justify-content: center; gap: 10px; margin-bottom: 25px; }
+        .stars input { display: none; }
+        .stars label { font-size: 35px; color: #ccc; cursor: pointer; transition: 0.2s; }
+        .stars input:checked ~ label, .stars label:hover, .stars label:hover ~ label { color: var(--star-color); }
+        .error-text { color: red; font-size: 12px; margin-top: -15px; margin-bottom: 15px; display: none; }
+        button { width: 100%; padding: 16px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; text-transform: uppercase; transition: 0.3s; position: relative; }
+        #verifyBtn { background-color: var(--brand-red); color: white; }
+        #submitBtn { background-color: var(--dark-blue); color: white; display: none; }
+        #otpBtn { background-color: #28a745; color: white; margin-top: 10px; }
+        .disabled-field { background-color: #f0f0f0 !important; cursor: not-allowed; opacity: 0.7; pointer-events: none; }
+        #additionalFields, #otpSection, #successSection { display: none; }
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid currentColor; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: none; margin: 0 auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<div class="container" id="mainContainer">
+    <div class="banner">
+        <img src="assets/logo.png" alt="Logo">
+        <h1>London Masters Campus</h1>
+    </div>
+
+    <div class="form-content">
+        <div id="step1">
+            <label>Course Name</label>
+            <select id="course">
+                <option value="MDRT">Breaking Barriers for MDRT 2026 &#10; Mr. Suranjith Godagama</option>
+                <option value="Bathiya">Reset & Rebuild 2026 &#10; Mr. Bhathiya Arthanayaka</option>
+            </select>
+            <label>Mobile Number (Registered Only)</label>
+            <input type="text" id="mobile" placeholder="07xxxxxxxx" maxlength="10">
+            <button type="button" id="verifyBtn" onclick="verifyMobile()">
+                <span id="vBtnText">Verify mobile no</span>
+                <div id="vLoader" class="loader"></div>
+            </button>
+        </div>
+
+        <div id="additionalFields">
+            <label>Full Name (This will appear on certificate)</label>
+            <input type="text" id="fullName" placeholder="Enter your full name">
+            
+            <label>Gmail Address</label>
+            <input type="email" id="gmail" placeholder="yourname@gmail.com">
+            <div id="emailError" class="error-text">කරුණාකර නිවැරදි Gmail ලිපිනයක් ඇතුළත් කරන්න.</div>
+            
+            <label>Nearest City</label>
+            <input type="text" id="city" placeholder="Enter your city">
+
+            <label>Rate the Programme</label>
+            <div class="stars">
+                <input type="radio" id="star5" name="rating" value="5"><label for="star5">★</label>
+                <input type="radio" id="star4" name="rating" value="4"><label for="star4">★</label>
+                <input type="radio" id="star3" name="rating" value="3"><label for="star3">★</label>
+                <input type="radio" id="star2" name="rating" value="2"><label for="star2">★</label>
+                <input type="radio" id="star1" name="rating" value="1"><label for="star1">★</label>
+            </div>
+            
+            <button type="button" id="submitBtn" onclick="finalSubmit()">
+                <span id="sBtnText">Submit & Send OTP</span>
+                <div id="sLoader" class="loader"></div>
+            </button>
+        </div>
+
+        <div id="otpSection">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <h3 style="color: var(--dark-blue);">Verify Your Email</h3>
+                <p style="font-size: 13px;">ඔබේ Gmail ගිණුමට ලැබුණු OTP අංකය ඇතුළත් කරන්න.</p>
+            </div>
+            <label>Enter 6-Digit OTP</label>
+            <input type="text" id="otpInput" placeholder="Enter OTP" maxlength="6" style="text-align: center; font-size: 24px; letter-spacing: 5px;">
+            <button type="button" id="otpBtn" onclick="verifyOTP()">
+                <span id="oBtnText">Verify & Download Certificate</span>
+                <div id="oLoader" class="loader"></div>
+            </button>
+        </div>
+
+        <div id="successSection" style="text-align: center; padding: 20px;">
+            <h2 style="color: green;">Success!</h2>
+            <p>ඔබේ සහතිකය දැන් සූදානම්.</p>
+            <a id="downloadLink" href="#" target="_blank" style="display: inline-block; padding: 15px 25px; background: var(--brand-red); color: white; text-decoration: none; border-radius: 10px; font-weight: bold; margin-top: 10px;">Download PDF Now</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    const scriptUrl = "https://script.google.com/macros/s/AKfycbwnusPahEzNBV3ZJOLPfk0hHmxKHe91Fy4RiEmZMJl5NqZL_uggL-bUQbHzd8jeo_LI/exec"; // මෙතනට Apps Script URL එක දමන්න
+
+    function verifyMobile() {
+        const mobile = document.getElementById('mobile').value;
+        const course = document.getElementById('course').value;
+        const btn = document.getElementById('verifyBtn');
+        const loader = document.getElementById('vLoader');
+        const btnText = document.getElementById('vBtnText');
+
+        if(mobile.length !== 10) return alert("නිවැරදි අංකය ඇතුළත් කරන්න.");
+
+        btn.disabled = true;
+        btnText.style.display = 'none';
+        loader.style.display = 'block';
+        
+        fetch(`${scriptUrl}?action=verify&mobile=${mobile}&course=${course}`)
+        .then(res => res.json()).then(data => {
+            if(data.status === "success") {
+                document.getElementById('step1').style.display = "none";
+                document.getElementById('additionalFields').style.display = 'block';
+                document.getElementById('submitBtn').style.display = 'block';
+            } else { 
+                alert("ඔබ මෙම පාඨමාලාව සඳහා ලියාපදිංචි වී නොමැත.");
+                btn.disabled = false;
+                btnText.style.display = 'block';
+                loader.style.display = 'none';
+            }
+        }).catch(err => {
+            alert("Error. Try again.");
+            btn.disabled = false;
+            btnText.style.display = 'block';
+            loader.style.display = 'none';
+        });
+    }
+
+    function finalSubmit() {
+        const gmail = document.getElementById('gmail').value.trim().toLowerCase();
+        const name = document.getElementById('fullName').value.trim();
+        const rating = document.querySelector('input[name="rating"]:checked')?.value || "0";
+        const btn = document.getElementById('submitBtn');
+        const loader = document.getElementById('sLoader');
+        const btnText = document.getElementById('sBtnText');
+
+        if(name === "" || !gmail.endsWith('@gmail.com')) return alert("නම සහ Gmail නිවැරදිව ඇතුළත් කරන්න.");
+
+        btn.disabled = true;
+        btnText.style.display = 'none';
+        loader.style.display = 'block';
+
+        const params = new URLSearchParams({
+            action: "submit",
+            mobile: document.getElementById('mobile').value,
+            course: document.getElementById('course').value,
+            name: name,
+            email: gmail,
+            rating: rating,
+            city: document.getElementById('city').value
+        });
+
+        fetch(`${scriptUrl}?${params.toString()}`)
+        .then(res => res.json()).then(data => {
+            if(data.status === "success") {
+                document.getElementById('additionalFields').style.display = 'none';
+                document.getElementById('otpSection').style.display = 'block';
+            }
+        }).catch(err => {
+            alert("Error submitting.");
+            btn.disabled = false;
+            btnText.style.display = 'block';
+            loader.style.display = 'none';
+        });
+    }
+
+    function verifyOTP() {
+        const otp = document.getElementById('otpInput').value;
+        const btn = document.getElementById('otpBtn');
+        const loader = document.getElementById('oLoader');
+        const btnText = document.getElementById('oBtnText');
+
+        if(otp.length < 6) return alert("OTP අංකය ඇතුළත් කරන්න.");
+
+        btn.disabled = true;
+        btnText.style.display = 'none';
+        loader.style.display = 'block';
+
+        const params = new URLSearchParams({
+            action: "verifyOTP",
+            email: document.getElementById('gmail').value.toLowerCase(),
+            otp: otp,
+            course: document.getElementById('course').value,
+            name: document.getElementById('fullName').value
+        });
+
+        fetch(`${scriptUrl}?${params.toString()}`)
+        .then(res => res.json()).then(data => {
+            if(data.status === "success") {
+                confetti({ particleCount: 200, spread: 80, origin: { y: 0.6 } });
+                document.getElementById('otpSection').style.display = 'none';
+                document.getElementById('successSection').style.display = 'block';
+                document.getElementById('downloadLink').href = data.url;
+            } else {
+                alert("වැරදි OTP අංකයක්. නැවත උත්සාහ කරන්න.");
+                btn.disabled = false;
+                btnText.style.display = 'block';
+                loader.style.display = 'none';
+            }
+        }).catch(err => {
+            alert("Error verifying OTP.");
+            btn.disabled = false;
+            btnText.style.display = 'block';
+            loader.style.display = 'none';
+        });
+    }
+</script>
+</body>
+</html>
