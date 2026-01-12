@@ -8,104 +8,95 @@
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
 
 <style>
-:root{
-  --dark-blue:#001f3f;
-  --brand-red:#ff0000;
-  --white:#ffffff;
-}
+:root { --dark-blue:#001f3f; --brand-red:#ff0000; --white:#ffffff; --star:#ffcc00; }
+
 body{
-  margin:0;
-  font-family:'Segoe UI',sans-serif;
-  background:var(--dark-blue);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  min-height:100vh;
+ margin:0;font-family:'Segoe UI',sans-serif;
+ background:var(--dark-blue);
+ display:flex;justify-content:center;align-items:center;
+ min-height:100vh;padding:10px;
 }
+
 .container{
-  width:100%;
-  max-width:450px;
-  background:#fff;
-  border-radius:20px;
-  overflow:hidden;
-  box-shadow:0 15px 35px rgba(0,0,0,.4);
+ width:100%;max-width:450px;background:#fff;
+ border-radius:20px;overflow:hidden;
+ box-shadow:0 15px 35px rgba(0,0,0,.4);
 }
+
 .banner{
-  background:#fff;
-  padding:25px 15px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:15px;
-  border-bottom:2px solid #f0f0f0;
+ background:#fff;padding:25px 15px;
+ display:flex;flex-direction:column;align-items:center;gap:15px;
+ border-bottom:2px solid #f0f0f0;
 }
 .banner img{height:80px}
 .banner h1{
-  font-size:24px;
-  margin:0;
-  background:linear-gradient(to right,var(--dark-blue),var(--brand-red),var(--dark-blue));
-  background-size:200%;
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  animation:move 3s linear infinite;
+ margin:0;font-size:24px;text-align:center;
+ background:linear-gradient(to right,var(--dark-blue)20%,var(--brand-red)50%,var(--dark-blue)80%);
+ background-size:200% auto;
+ -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+ animation:move 3s linear infinite;
 }
 @keyframes move{0%{background-position:200%}100%{background-position:0%}}
 
 .form-content{padding:25px 20px}
-label{font-weight:600;font-size:14px;color:#333}
-input,select{
-  width:100%;
-  padding:14px;
-  margin:8px 0 18px;
-  border:1px solid #b0bec5;
-  border-radius:10px;
-  font-size:15px;
-}
-button{
-  width:100%;
-  padding:16px;
-  border:none;
-  border-radius:10px;
-  font-size:15px;
-  font-weight:700;
-  cursor:pointer;
-}
-#verifyBtn{background:var(--brand-red);color:#fff}
-#submitBtn{background:var(--dark-blue);color:#fff}
-#otpBtn{background:#28a745;color:#fff}
-.hidden{display:none}
 
-.stars{display:flex;justify-content:center;gap:10px;margin-bottom:20px}
+label{font-weight:600;font-size:14px;color:#333;margin-bottom:8px;display:block}
+
+select,input{
+ width:100%;padding:14px;margin-bottom:20px;
+ border:1px solid #b0bec5;border-radius:10px;
+ font-size:16px;box-sizing:border-box;
+}
+
+select#course{
+ min-height:70px;white-space:pre-line;line-height:1.4;font-size:15px;
+}
+
+button{
+ width:100%;padding:16px;border:none;border-radius:10px;
+ font-size:16px;font-weight:bold;cursor:pointer;
+ text-transform:uppercase;transition:.3s;position:relative;
+}
+
+#verifyBtn{background:var(--brand-red);color:#fff}
+#submitBtn{background:var(--dark-blue);color:#fff;display:none}
+#otpBtn{background:#28a745;color:#fff;margin-top:10px}
+
+.loader{
+ border:3px solid #f3f3f3;border-top:3px solid currentColor;
+ border-radius:50%;width:20px;height:20px;
+ animation:spin 1s linear infinite;display:none;margin:0 auto;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.stars{display:flex;flex-direction:row-reverse;justify-content:center;gap:10px}
 .stars input{display:none}
-.stars label{font-size:30px;color:#ccc;cursor:pointer}
+.stars label{font-size:35px;color:#ccc;cursor:pointer}
 .stars input:checked~label,
 .stars label:hover,
-.stars label:hover~label{color:#ffcc00}
+.stars label:hover~label{color:var(--star)}
 
-/* POPUP AD */
+#additionalFields,#otpSection,#successSection,#existingSection{display:none}
+
+/* AD POPUP */
 #adOverlay{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.6);
-  display:none;
-  justify-content:center;
-  align-items:center;
-  z-index:999;
+ position:fixed;inset:0;
+ background:rgba(0,0,0,.35);
+ display:none;justify-content:center;align-items:center;z-index:99;
 }
 #adBox{
-  background:#fff;
-  border-radius:15px;
-  padding:10px;
-  position:relative;
-  max-width:90%;
+ width:90%;max-width:360px;
+ animation:pulse .6s ease;
+ position:relative;
 }
-#adBox img{width:100%;border-radius:10px}
+@keyframes pulse{0%{transform:scale(.85)}100%{transform:scale(1)}}
+#adBox img{width:100%;border-radius:15px}
 #adClose{
-  position:absolute;
-  top:5px;
-  right:10px;
-  font-size:22px;
-  cursor:pointer;
+ position:absolute;top:-15px;right:-15px;
+ background:#fff;color:#000;
+ width:35px;height:35px;border-radius:50%;
+ display:flex;align-items:center;justify-content:center;
+ font-size:20px;font-weight:bold;cursor:pointer;
 }
 </style>
 </head>
@@ -113,162 +104,179 @@ button{
 <body>
 
 <div id="adOverlay">
-  <div id="adBox">
-    <div id="adClose" onclick="closeAd()">✖</div>
-    <img src="assets/ad_1080.webp" alt="Ad">
-  </div>
+ <div id="adBox">
+  <div id="adClose" onclick="closeAd()">✕</div>
+  <img src="assets/ad.webp">
+ </div>
 </div>
 
 <div class="container">
-  <div class="banner">
-    <img src="assets/logo.png">
-    <h1>London Masters Campus</h1>
-  </div>
+<div class="banner">
+ <img src="assets/logo.png">
+ <h1>London Masters Campus</h1>
+</div>
 
-  <div class="form-content">
+<div class="form-content">
 
-    <!-- STEP 1 -->
-    <div id="step1">
-      <label>Course Name</label>
-      <select id="course">
-        <option value="MDRT">Breaking Barriers for MDRT 2026</option>
-        <option value="Bathiya">Reset & Rebuild 2026</option>
-      </select>
+<!-- STEP 1 -->
+<div id="step1">
+ <label>Course Name</label>
+ <select id="course">
+  <option value="MDRT">Breaking Barriers for MDRT 2026 &#10; Mr. Suranjith Godagama</option>
+  <option value="Bathiya">Reset & Rebuild 2026 &#10; Mr. Bhathiya Arthanayaka</option>
+ </select>
 
-      <label>Mobile Number</label>
-      <input id="mobile" placeholder="07xxxxxxxx" maxlength="10">
-      <div style="color:red;font-size:12px">
-        කරුණාකර ඔබ රෙජිස්ටර් වූ දුරකථන අංකය පමණක් භාවිතා කරන්න.
-      </div>
+ <label>Mobile Number (Registered Only)</label>
+ <input id="mobile" maxlength="10" placeholder="07xxxxxxxx">
 
-      <button id="verifyBtn" onclick="verifyMobile()">Verify Mobile</button>
-    </div>
+ <button id="verifyBtn" onclick="verifyMobile()">
+  <span id="vTxt">Verify Mobile No</span>
+  <div class="loader" id="vLoad"></div>
+ </button>
+</div>
 
-    <!-- ALREADY REGISTERED -->
-    <div id="existing" class="hidden">
-      <p><b>ඔබ දැනටමත් ලියාපදිංචි වී ඇත.</b></p>
-      <p>Email: <span id="oldEmail"></span></p>
+<!-- EXISTING USER -->
+<div id="existingSection">
+ <p style="text-align:center;font-weight:600">You are already registered</p>
+ <p style="text-align:center" id="exEmail"></p>
+ <button onclick="keepEmail()">Continue</button>
+ <button style="margin-top:10px;background:#ccc;color:#000" onclick="changeEmail()">Change Email</button>
+</div>
 
-      <button onclick="continueSame()">Continue with same email</button>
-      <button style="margin-top:10px;background:#555;color:#fff" onclick="changeEmail()">Change email</button>
-    </div>
+<!-- ADDITIONAL -->
+<div id="additionalFields">
+ <label>Full Name</label>
+ <input id="fullName">
 
-    <!-- DETAILS -->
-    <div id="details" class="hidden">
-      <label>Full Name</label>
-      <input id="fullName">
+ <label>Gmail Address</label>
+ <input id="gmail">
 
-      <label>Gmail Address</label>
-      <input id="gmail">
+ <label>Nearest City</label>
+ <input id="city">
 
-      <label>Nearest City</label>
-      <input id="city">
+ <label>Rate the Programme</label>
+ <div class="stars">
+  <input type="radio" id="s5" name="rating" value="5"><label for="s5">★</label>
+  <input type="radio" id="s4" name="rating" value="4"><label for="s4">★</label>
+  <input type="radio" id="s3" name="rating" value="3"><label for="s3">★</label>
+  <input type="radio" id="s2" name="rating" value="2"><label for="s2">★</label>
+  <input type="radio" id="s1" name="rating" value="1"><label for="s1">★</label>
+ </div>
 
-      <label>Rate the Programme</label>
-      <div class="stars">
-        <input type="radio" id="s5" name="r" value="5"><label for="s5">★</label>
-        <input type="radio" id="s4" name="r" value="4"><label for="s4">★</label>
-        <input type="radio" id="s3" name="r" value="3"><label for="s3">★</label>
-        <input type="radio" id="s2" name="r" value="2"><label for="s2">★</label>
-        <input type="radio" id="s1" name="r" value="1"><label for="s1">★</label>
-      </div>
+ <button id="submitBtn" onclick="finalSubmit()">
+  <span id="sTxt">Submit & Send OTP</span>
+  <div class="loader" id="sLoad"></div>
+ </button>
+</div>
 
-      <button id="submitBtn" onclick="submitForm(false)">Submit & Send OTP</button>
-    </div>
+<!-- OTP -->
+<div id="otpSection">
+ <label>Enter 6 Digit OTP</label>
+ <input id="otpInput" maxlength="6" style="text-align:center;font-size:24px;letter-spacing:5px">
+ <button id="otpBtn" onclick="verifyOTP()">
+  <span id="oTxt">Verify & Download</span>
+  <div class="loader" id="oLoad"></div>
+ </button>
+</div>
 
-    <!-- OTP -->
-    <div id="otp" class="hidden">
-      <label>Enter OTP</label>
-      <input id="otpInput" maxlength="6" style="text-align:center;font-size:22px">
-      <button id="otpBtn" onclick="verifyOTP()">Verify & Download</button>
-    </div>
+<!-- SUCCESS -->
+<div id="successSection" style="text-align:center">
+ <h2 style="color:green">Success!</h2>
+ <a id="downloadLink" target="_blank"
+  style="display:inline-block;padding:15px 25px;background:var(--brand-red);
+  color:#fff;text-decoration:none;border-radius:10px;font-weight:bold">
+ Download PDF
+ </a>
+</div>
 
-    <!-- SUCCESS -->
-    <div id="success" class="hidden" style="text-align:center">
-      <h2 style="color:green">Success!</h2>
-      <a id="download" target="_blank">Download Certificate</a>
-    </div>
-
-  </div>
+</div>
 </div>
 
 <script>
-const scriptUrl = "https://script.google.com/macros/s/AKfycbwnusPahEzNBV3ZJOLPfk0hHmxKHe91Fy4RiEmZMJl5NqZL_uggL-bUQbHzd8jeo_LI/exec";
+const scriptUrl="https://script.google.com/macros/s/AKfycbwnusPahEzNBV3ZJOLPfk0hHmxKHe91Fy4RiEmZMJl5NqZL_uggL-bUQbHzd8jeo_LI/exec";
 
-let cachedName = "";
-
-function verifyMobile(){
-  fetch(`${scriptUrl}?action=verify&mobile=${mobile.value}&course=${course.value}`)
-  .then(r=>r.json()).then(d=>{
-    if(d.status==="new_user"){
-      step1.classList.add("hidden");
-      details.classList.remove("hidden");
-      showAd();
-    }
-    if(d.status==="already_submitted"){
-      cachedName = d.name;
-      oldEmail.innerText = d.email;
-      step1.classList.add("hidden");
-      existing.classList.remove("hidden");
-      showAd();
-    }
-    if(d.status==="not_registered"){
-      alert("ඔබ මෙම පාඨමාලාව සඳහා ලියාපදිංචි වී නොමැත.");
-    }
-  });
+function spin(btn,txt,load,on){
+ btn.disabled=on;
+ txt.style.display=on?"none":"block";
+ load.style.display=on?"block":"none";
 }
 
-function continueSame(){
-  submitForm(false,true);
+function verifyMobile(){
+ const m=mobile.value;
+ if(m.length!==10)return alert("නිවැරදි අංකය ඇතුළත් කරන්න");
+ spin(verifyBtn,vTxt,vLoad,true);
+
+ fetch(`${scriptUrl}?action=verify&mobile=${m}&course=${course.value}`)
+ .then(r=>r.json()).then(d=>{
+  spin(verifyBtn,vTxt,vLoad,false);
+  document.getElementById("adOverlay").style.display="flex";
+
+  if(d.status==="new"){
+   step1.style.display="none";
+   additionalFields.style.display="block";
+   submitBtn.style.display="block";
+  }
+  if(d.status==="already"){
+   step1.style.display="none";
+   existingSection.style.display="block";
+   exEmail.innerText=d.email;
+   gmail.value=d.email;
+   fullName.value=d.name;
+  }
+ });
+}
+
+function closeAd(){adOverlay.style.display="none"}
+
+function keepEmail(){
+ existingSection.style.display="none";
+ otpSection.style.display="block";
+ fetch(`${scriptUrl}?action=sendOtp&email=${gmail.value}`);
 }
 
 function changeEmail(){
-  existing.classList.add("hidden");
-  details.classList.remove("hidden");
-  fullName.value = cachedName;
+ existingSection.style.display="none";
+ additionalFields.style.display="block";
+ submitBtn.style.display="block";
 }
 
-function submitForm(replace,skipDetails){
-  const params = new URLSearchParams({
-    action:"submit",
-    mobile:mobile.value,
-    course:course.value,
-    name: fullName.value || cachedName,
-    email:gmail.value || oldEmail.innerText,
-    city:city.value,
-    rating:document.querySelector('input[name="r"]:checked')?.value||"",
-    replace:replace
-  });
-  fetch(`${scriptUrl}?${params}`)
-  .then(r=>r.json()).then(()=>{
-    details.classList.add("hidden");
-    existing.classList.add("hidden");
-    otp.classList.remove("hidden");
-  });
+function finalSubmit(){
+ spin(submitBtn,sTxt,sLoad,true);
+ const p=new URLSearchParams({
+  action:"submit",
+  mobile:mobile.value,
+  course:course.value,
+  name:fullName.value,
+  email:gmail.value,
+  city:city.value,
+  rating:document.querySelector('input[name=rating]:checked')?.value||0
+ });
+ fetch(`${scriptUrl}?${p}`).then(r=>r.json()).then(()=>{
+  spin(submitBtn,sTxt,sLoad,false);
+  additionalFields.style.display="none";
+  otpSection.style.display="block";
+ });
 }
 
 function verifyOTP(){
-  fetch(`${scriptUrl}?action=verifyOTP&email=${gmail.value||oldEmail.innerText}&otp=${otpInput.value}&course=${course.value}&name=${fullName.value||cachedName}`)
-  .then(r=>r.json()).then(d=>{
-    if(d.status==="success"){
-      confetti();
-      otp.classList.add("hidden");
-      success.classList.remove("hidden");
-      download.href=d.url;
-      download.innerText="Download PDF";
-    }else{
-      alert("OTP වැරදියි හෝ කල් ඉකුත් වී ඇත.");
-    }
-  });
-}
-
-function showAd(){
-  setTimeout(()=>adOverlay.style.display="flex",500);
-}
-function closeAd(){
-  adOverlay.style.display="none";
+ spin(otpBtn,oTxt,oLoad,true);
+ const p=new URLSearchParams({
+  action:"verifyOTP",
+  email:gmail.value,
+  otp:otpInput.value,
+  course:course.value,
+  name:fullName.value
+ });
+ fetch(`${scriptUrl}?${p}`).then(r=>r.json()).then(d=>{
+  spin(otpBtn,oTxt,oLoad,false);
+  if(d.status==="success"){
+   confetti({particleCount:200,spread:80});
+   otpSection.style.display="none";
+   successSection.style.display="block";
+   downloadLink.href=d.url;
+  }else alert("OTP invalid / expired");
+ });
 }
 </script>
-
 </body>
 </html>
