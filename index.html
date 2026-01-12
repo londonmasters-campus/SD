@@ -8,113 +8,84 @@
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
 
 <style>
-:root {
- --dark-blue:#001f3f;
- --brand-red:#ff0000;
- --white:#ffffff;
- --star-color:#ffcc00;
-}
+:root{--dark-blue:#001f3f;--brand-red:#ff0000;--white:#ffffff;--star-color:#ffcc00;}
 body{
- margin:0;
- font-family:'Segoe UI',sans-serif;
- background-color:var(--dark-blue);
- display:flex;
- justify-content:center;
- align-items:center;
- min-height:100vh;
- padding:10px;
+ margin:0;font-family:'Segoe UI',sans-serif;
+ background:var(--dark-blue);
+ display:flex;justify-content:center;align-items:center;
+ min-height:100vh;padding:10px;
 }
 .container{
- width:100%;
- max-width:450px;
- background:var(--white);
- border-radius:20px;
- overflow:hidden;
- box-shadow:0 15px 35px rgba(0,0,0,0.4);
+ width:100%;max-width:450px;background:#fff;
+ border-radius:20px;overflow:hidden;
+ box-shadow:0 15px 35px rgba(0,0,0,.4);
 }
 .banner{
- background:var(--white);
- padding:25px 15px;
- display:flex;
- flex-direction:column;
- align-items:center;
- gap:15px;
+ padding:25px 15px;text-align:center;
  border-bottom:2px solid #f0f0f0;
 }
 .banner img{height:80px}
 .banner h1{
- font-size:24px;
- margin:0;
+ margin:15px 0 0;font-size:24px;
  background:linear-gradient(to right,var(--dark-blue) 20%,var(--brand-red) 50%,var(--dark-blue) 80%);
  background-size:200% auto;
  -webkit-background-clip:text;
  -webkit-text-fill-color:transparent;
- animation:moveRight 3s linear infinite;
+ animation:move 3s linear infinite;
 }
-@keyframes moveRight{
- 0%{background-position:200%}
- 100%{background-position:0%}
-}
+@keyframes move{0%{background-position:200%}100%{background-position:0%}}
+
 .form-content{padding:25px 20px}
 label{font-size:14px;font-weight:600;margin-bottom:8px;display:block}
 select,input{
- width:100%;
- padding:14px;
- margin-bottom:20px;
- border:1px solid #b0bec5;
- border-radius:10px;
- font-size:16px;
+ width:100%;padding:14px;margin-bottom:20px;
+ border:1px solid #b0bec5;border-radius:10px;font-size:16px;
 }
-select#course{
- min-height:70px;
- white-space:pre-line;
-}
+select{min-height:70px;white-space:pre-line}
+
 .stars{
- display:flex;
- flex-direction:row-reverse;
- justify-content:center;
- gap:10px;
- margin-bottom:25px;
+ display:flex;flex-direction:row-reverse;justify-content:center;gap:10px;margin-bottom:25px
 }
 .stars input{display:none}
-.stars label{
- font-size:35px;
- color:#ccc;
- cursor:pointer;
-}
+.stars label{font-size:35px;color:#ccc;cursor:pointer}
 .stars input:checked~label,
 .stars label:hover,
-.stars label:hover~label{
- color:var(--star-color)
-}
+.stars label:hover~label{color:var(--star-color)}
+
 button{
- width:100%;
- padding:16px;
- border:none;
- border-radius:10px;
- font-size:16px;
- font-weight:bold;
- cursor:pointer;
- position:relative;
+ width:100%;padding:16px;border:none;border-radius:10px;
+ font-size:16px;font-weight:bold;cursor:pointer;position:relative
 }
-#verifyBtn{background:var(--brand-red);color:white}
-#submitBtn{background:var(--dark-blue);color:white;display:none}
-#otpBtn{background:#28a745;color:white}
+#verifyBtn{background:var(--brand-red);color:#fff}
+#submitBtn{background:var(--dark-blue);color:#fff;display:none}
+#otpBtn{background:#28a745;color:#fff}
+
 .loader{
- border:3px solid #f3f3f3;
- border-top:3px solid currentColor;
- border-radius:50%;
- width:20px;
- height:20px;
- animation:spin 1s linear infinite;
- display:none;
- margin:auto;
+ border:3px solid #f3f3f3;border-top:3px solid currentColor;
+ border-radius:50%;width:20px;height:20px;
+ animation:spin 1s linear infinite;display:none;margin:auto
 }
-@keyframes spin{
- 0%{transform:rotate(0)}
- 100%{transform:rotate(360deg)}
-}
+@keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+
 #additionalFields,#otpSection,#successSection{display:none}
+
+/* AD */
+#adOverlay{
+ position:fixed;inset:0;
+ background:rgba(0,0,0,.45);
+ display:none;align-items:center;justify-content:center;
+ z-index:9999
+}
+#adBox{position:relative;animation:zoom .4s ease}
+@keyframes zoom{from{transform:scale(.6)}to{transform:scale(1)}}
+#adBox img{width:90vw;max-width:400px;border-radius:20px}
+#adClose{
+ position:absolute;top:-12px;right:-12px;
+ width:32px;height:32px;border-radius:50%;
+ background:#fff;color:#000;font-weight:bold;
+ display:flex;align-items:center;justify-content:center;
+ cursor:pointer
+}
 </style>
 </head>
 
@@ -163,11 +134,11 @@ Gmail ලිපිනය පමණක් ඇතුළත් කරන්න
 
 <label>Rate the Programme</label>
 <div class="stars">
-<input type="radio" id="s5" name="rating" value="5"><label for="s5">★</label>
-<input type="radio" id="s4" name="rating" value="4"><label for="s4">★</label>
-<input type="radio" id="s3" name="rating" value="3"><label for="s3">★</label>
-<input type="radio" id="s2" name="rating" value="2"><label for="s2">★</label>
-<input type="radio" id="s1" name="rating" value="1"><label for="s1">★</label>
+<input type="radio" id="r5" name="rating" value="5"><label for="r5">★</label>
+<input type="radio" id="r4" name="rating" value="4"><label for="r4">★</label>
+<input type="radio" id="r3" name="rating" value="3"><label for="r3">★</label>
+<input type="radio" id="r2" name="rating" value="2"><label for="r2">★</label>
+<input type="radio" id="r1" name="rating" value="1"><label for="r1">★</label>
 </div>
 
 <button id="submitBtn" onclick="finalSubmit()">
@@ -195,7 +166,7 @@ Gmail ලිපිනය පමණක් ඇතුළත් කරන්න
 <h2 style="color:green">Success!</h2>
 <a id="downloadLink" target="_blank"
 style="display:inline-block;padding:15px 25px;
-background:var(--brand-red);color:white;
+background:var(--brand-red);color:#fff;
 border-radius:10px;text-decoration:none;font-weight:bold">
 Download Certificate
 </a>
@@ -204,25 +175,34 @@ Download Certificate
 </div>
 </div>
 
+<!-- AD POPUP -->
+<div id="adOverlay">
+<div id="adBox">
+<img src="ad_1080.webp">
+<div id="adClose" onclick="closeAd()">✕</div>
+</div>
+</div>
+
 <script>
 const scriptUrl="https://script.google.com/macros/s/AKfycbwnusPahEzNBV3ZJOLPfk0hHmxKHe91Fy4RiEmZMJl5NqZL_uggL-bUQbHzd8jeo_LI/exec";
 
-function isGmail(e){return e.endsWith("@gmail.com");}
+const isGmail=e=>e.endsWith("@gmail.com");
+
+function showAd(){adOverlay.style.display="flex"}
+function closeAd(){adOverlay.style.display="none"}
 
 function verifyMobile(){
- let m=mobile.value;
- let c=course.value;
- if(m.length!=10)return alert("නිවැරදි අංකයක් ඇතුළත් කරන්න");
-
+ if(mobile.value.length!=10)return alert("නිවැරදි අංකයක් ඇතුළත් කරන්න");
  vTxt.style.display="none";vLoad.style.display="block";
 
- fetch(`${scriptUrl}?action=verify&mobile=${m}&course=${c}`)
+ fetch(`${scriptUrl}?action=verify&mobile=${mobile.value}&course=${course.value}`)
  .then(r=>r.json()).then(d=>{
    vTxt.style.display="block";vLoad.style.display="none";
    if(d.status=="new"){
      step1.style.display="none";
      additionalFields.style.display="block";
      submitBtn.style.display="block";
+     showAd();
    }
    if(d.status=="already"){
      fullName.value=d.name;
@@ -236,9 +216,7 @@ function verifyMobile(){
 }
 
 function finalSubmit(){
- let g=gmail.value.trim().toLowerCase();
- if(!isGmail(g))return alert("Gmail ලිපිනය පමණක් ඇතුළත් කරන්න");
-
+ if(!isGmail(gmail.value))return alert("Gmail ලිපිනය පමණක් ඇතුළත් කරන්න");
  sTxt.style.display="none";sLoad.style.display="block";
 
  let p=new URLSearchParams({
@@ -246,19 +224,17 @@ function finalSubmit(){
  mobile:mobile.value,
  course:course.value,
  name:fullName.value,
- email:g,
+ email:gmail.value,
  city:city.value,
  rating:document.querySelector('input[name=rating]:checked')?.value||"0"
  });
 
  fetch(`${scriptUrl}?${p}`)
- .then(r=>r.json()).then(()=>{
-   additionalFields.style.display="none";
-   otpSection.style.display="block";
- });
+ .then(()=>{additionalFields.style.display="none";otpSection.style.display="block"});
 }
 
 function verifyOTP(){
+ oTxt.style.display="none";oLoad.style.display="block";
  let p=new URLSearchParams({
  action:"verifyOTP",
  email:gmail.value,
@@ -267,8 +243,6 @@ function verifyOTP(){
  name:fullName.value
  });
 
- oTxt.style.display="none";oLoad.style.display="block";
-
  fetch(`${scriptUrl}?${p}`)
  .then(r=>r.json()).then(d=>{
    if(d.status=="success"){
@@ -276,7 +250,7 @@ function verifyOTP(){
      otpSection.style.display="none";
      successSection.style.display="block";
      downloadLink.href=d.url;
-   }else alert("OTP වැරදියි / කල් ඉකුත් වී ඇත");
+   }else alert("OTP වැරදියි හෝ කල් ඉකුත් වී ඇත");
  });
 }
 </script>
