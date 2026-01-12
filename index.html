@@ -67,14 +67,12 @@ button{
 }
 @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
 
-#additionalFields,#otpSection,#successSection{display:none}
+#additionalFields,#otpSection,#successSection,#repeatActions{display:none}
 
 /* AD */
 #adOverlay{
- position:fixed;inset:0;
- background:rgba(0,0,0,.45);
- display:none;align-items:center;justify-content:center;
- z-index:9999
+ position:fixed;inset:0;background:rgba(0,0,0,.45);
+ display:none;align-items:center;justify-content:center;z-index:9999
 }
 #adBox{position:relative;animation:zoom .4s ease}
 @keyframes zoom{from{transform:scale(.6)}to{transform:scale(1)}}
@@ -83,8 +81,7 @@ button{
  position:absolute;top:-12px;right:-12px;
  width:32px;height:32px;border-radius:50%;
  background:#fff;color:#000;font-weight:bold;
- display:flex;align-items:center;justify-content:center;
- cursor:pointer
+ display:flex;align-items:center;justify-content:center;cursor:pointer
 }
 </style>
 </head>
@@ -99,7 +96,6 @@ button{
 
 <div class="form-content">
 
-<!-- STEP 1 -->
 <div id="step1">
 <label>Course Name</label>
 <select id="course">
@@ -116,9 +112,13 @@ Mr. Bhathiya Arthanayaka</option>
 <span id="vTxt">Verify Mobile No</span>
 <div class="loader" id="vLoad"></div>
 </button>
+
+<div id="repeatActions" style="margin-top:15px">
+<button style="background:#001f3f;color:#fff;margin-bottom:10px" onclick="editGmail()">Edit your gmail</button>
+<button style="background:#28a745;color:#fff" onclick="downloadDirect()">Download certificate</button>
+</div>
 </div>
 
-<!-- STEP 2 -->
 <div id="additionalFields">
 <label>Full Name (Certificate)</label>
 <input id="fullName">
@@ -147,27 +147,22 @@ Gmail ලිපිනය පමණක් ඇතුළත් කරන්න
 </button>
 </div>
 
-<!-- OTP -->
 <div id="otpSection">
 <p style="text-align:center;font-size:15px">
 ඔබගේ e-certificate download කර ගැනීම සඳහා ඔබගේ Gmail ලිපිනයට ලැබෙන OTP අංකය ඇතුළත් කරන්න
 </p>
-
 <input id="otpInput" maxlength="6" style="text-align:center;font-size:24px;letter-spacing:5px">
-
 <button id="otpBtn" onclick="verifyOTP()">
 <span id="oTxt">Verify & Download Certificate</span>
 <div class="loader" id="oLoad"></div>
 </button>
 </div>
 
-<!-- SUCCESS -->
 <div id="successSection" style="text-align:center">
 <h2 style="color:green">Success!</h2>
 <a id="downloadLink" target="_blank"
-style="display:inline-block;padding:15px 25px;
-background:var(--brand-red);color:#fff;
-border-radius:10px;text-decoration:none;font-weight:bold">
+style="display:inline-block;padding:15px 25px;background:var(--brand-red);
+color:#fff;border-radius:10px;text-decoration:none;font-weight:bold">
 Download Certificate
 </a>
 </div>
@@ -175,7 +170,6 @@ Download Certificate
 </div>
 </div>
 
-<!-- AD POPUP -->
 <div id="adOverlay">
 <div id="adBox">
 <img src="ad_1080.webp">
@@ -185,11 +179,10 @@ Download Certificate
 
 <script>
 const scriptUrl="https://script.google.com/macros/s/AKfycbwnusPahEzNBV3ZJOLPfk0hHmxKHe91Fy4RiEmZMJl5NqZL_uggL-bUQbHzd8jeo_LI/exec";
-
+let repeatEmail="",repeatName="";
 const isGmail=e=>e.endsWith("@gmail.com");
-
-function showAd(){adOverlay.style.display="flex"}
-function closeAd(){adOverlay.style.display="none"}
+const showAd=()=>adOverlay.style.display="flex";
+const closeAd=()=>adOverlay.style.display="none";
 
 function verifyMobile(){
  if(mobile.value.length!=10)return alert("නිවැරදි අංකයක් ඇතුළත් කරන්න");
@@ -198,6 +191,7 @@ function verifyMobile(){
  fetch(`${scriptUrl}?action=verify&mobile=${mobile.value}&course=${course.value}`)
  .then(r=>r.json()).then(d=>{
    vTxt.style.display="block";vLoad.style.display="none";
+
    if(d.status=="new"){
      step1.style.display="none";
      additionalFields.style.display="block";
@@ -205,14 +199,28 @@ function verifyMobile(){
      showAd();
    }
    if(d.status=="already"){
-     fullName.value=d.name;
-     gmail.value=d.email;
-     step1.style.display="none";
-     otpSection.style.display="block";
-     fetch(`${scriptUrl}?action=sendOtp&email=${d.email}`);
+     repeatEmail=d.email;
+     repeatName=d.name;
+     repeatActions.style.display="block";
    }
    if(d.status=="not_found") alert("ඔබ ලියාපදිංචි වී නොමැත");
  });
+}
+
+function editGmail(){
+ fullName.value=repeatName;
+ gmail.value=repeatEmail;
+ step1.style.display="none";
+ additionalFields.style.display="block";
+ submitBtn.style.display="block";
+}
+
+function downloadDirect(){
+ fullName.value=repeatName;
+ gmail.value=repeatEmail;
+ step1.style.display="none";
+ otpSection.style.display="block";
+ fetch(`${scriptUrl}?action=sendOtp&email=${repeatEmail}`);
 }
 
 function finalSubmit(){
